@@ -1,0 +1,227 @@
+[data-immanuel-hide] {
+    visibility: hidden;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+.chart-container {
+    margin: 50px auto 0 auto;
+    max-width: 800px;
+    overflow: hidden;
+}
+
+.chart-square {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+}
+
+#chart,
+[data-immanuel-background] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+[data-immanuel-background] {
+    background: url('chart-image.jpg') center center/80% 80% no-repeat;
+}
+
+[data-immanuel-track],
+[data-immanuel-boundary] {
+    position: absolute;
+}
+
+[data-immanuel-track="angles"] {
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+}
+
+[data-immanuel-track="signs"] {
+    top: 14%;
+    left: 14%;
+    width: 72%;
+    height: 72%;
+}
+
+[data-immanuel-track="planets"] {
+    top: 21%;
+    left: 21%;
+    width: 58%;
+    height: 58%;
+}
+
+[data-immanuel-track="angle-text"] {
+    top: 26.5%;
+    left: 26.5%;
+    width: 47%;
+    height: 47%;
+}
+
+[data-immanuel-track="house-numbers"] {
+    top: 42%;
+    left: 42%;
+    width: 16%;
+    height: 16%;
+}
+
+[data-immanuel-boundary="house-end"] {
+    top: 17.75%;
+    left: 17.75%;
+    width: 64.5%;
+    height: 64.5%;
+}
+
+[data-immanuel-boundary="house-start"] {
+    top: 69.5%;
+    left: 69.5%;
+    width: 16%;
+    height: 16%;
+}
+
+[data-immanuel-boundary="angle-markers-end"] {
+    top: 17.5%;
+    left: 17.5%;
+    width: 65%;
+    height: 65%;
+}
+
+[data-immanuel-boundary="angle-markers-start"] {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+}
+
+[data-immanuel-boundary="aspect-end"] {
+    top: 32.5%;
+    left: 32.5%;
+    width: 35%;
+    height: 35%;
+}
+
+[data-immanuel-sign] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-family: 'Astro';
+    font-size: 1.3rem;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-sign] {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 2.2rem;
+    }
+}
+
+[data-immanuel-planet] {
+    display: inline-block;
+    padding: 0.2rem;
+    font-family: 'Astro';
+    font-size: 1.4rem;
+    line-height: 0.8;
+    text-align: center;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-planet] {
+        font-size: 2.2rem;
+    }
+}
+[data-immanuel-planet] .retrograde {
+    display: none;
+    position: absolute;
+    bottom: -0.1em;
+    right: -0.4em;
+    font-size: 0.8em;
+    color: #444;
+}
+[data-immanuel-planet].planet-movement--retrograde .retrograde {
+    display: block;
+}
+
+[data-immanuel-sign] {
+    color: #888;
+}
+
+[data-immanuel-angle] {
+    display: inline-block;
+    font-family: 'Astro';
+    font-size: 1.5rem;
+    text-align: center;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-angle] {
+        font-size: 2rem;
+    }
+}
+
+[data-immanuel-angle] [data-immanuel-placeholder] {
+    display: block;
+    font-family: sans-serif;
+    font-size: 0.35em;
+}
+
+.immanuel__angle-marker,
+.immanuel__angle-pointer {
+    stroke: #AAA;
+    stroke-width: 1px;
+}
+
+.immanuel__house-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.2em;
+    height: 1.2em;
+    font-family: 'Astro';
+    font-size: 1.2em;
+}
+
+.immanuel__house-line {
+    stroke: #000;
+    stroke-width: 1px;
+}
+
+.immanuel__house-line.house-line--1,
+.immanuel__house-line.house-line--4,
+.immanuel__house-line.house-line--7,
+.immanuel__house-line.house-line--10 {
+    stroke-width: 3px;
+}
+
+.immanuel__aspect-line {
+    stroke: none;
+    stroke-width: 1px;
+}
+
+.immanuel__aspect-line.aspect-line--opposite,
+.immanuel__aspect-line.aspect-line--square {
+    stroke: #F00;
+}
+
+.immanuel__aspect-line.aspect-line--trine,
+.immanuel__aspect-line.aspect-line--sextile {
+    stroke: #00F;
+}
+
+.immanuel__aspect-line.aspect-line--quincunx {
+    stroke: #0F0;
+}
+
+.immanuel__angle-text {
+    font-size: 0.5em;
+}
+@media only screen and (min-width: 620px) {
+    .immanuel__angle-text {
+        font-size: 0.7em;
+    }
+}
