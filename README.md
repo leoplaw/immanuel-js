@@ -1,11 +1,11 @@
-# Immanuel JS
+# Immanuel.JS
 
 This package provides a fully-customisable, responsive-ready, pure JavaScript astrology chart. The main chart graphic elements are provided and styled by the developer, while elements such as aspects lines and house cusps are drawn via SVG, and are also fully customisable via CSS. See the `/demo` directory for an example.
 
 ## Installation
 
 ```bash
-npm install immanuel-js
+npm install immanuel
 ```
 
 ## Usage
@@ -14,7 +14,7 @@ Elements are set up in the HTML using `data` attributes, and consist mostly of *
 
 *Tracks* are elements that define the diameter of the circle that certain child elements will follow - for example, the `[data-immanuel-track="planets"]` element will be an invisible div positioned and sized by your CSS to define the diameter of the circle whose circumference the planets will be placed along.
 
-Some of these may be omitted - for example, if your chart background graphic already includes the signs, then you can safely omit the `[data-immanuel-track="signs"]` element, and immanuel-js will not look for the sign glyphs.
+Some of these may be omitted - for example, if your chart background graphic already includes the signs, then you can safely omit the `[data-immanuel-track="signs"]` element, and immanuel.js will not look for the sign glyphs.
 
 *Boundaries* define where things begin and end - for example `data-immanuel-boundary="house-start"` and `data-immanuel-boundary="house-end"` define where the house cusp lines should be drawn from and to.
 
@@ -22,7 +22,7 @@ Take a look at `/demo/index.html` to see the elements that can go into a chart, 
 
 Besides tracks and boundaries, a `[data-immanuel-background]` element is expected, which should contain the graphic of the basic chart itself.
 
-The `[data-immanuel-lines]` element is optional, and simply defines the element that immanuel-js should append the SVG canvas element to. If this is omitted, it will be appended to the main element that was passed to the constructor (ie. all lines drawn on it will appear on top of all other elements).
+The `[data-immanuel-lines]` element is optional, and simply defines the element that immanuel.js should append the SVG canvas element to. If this is omitted, it will be appended to the main element that was passed to the constructor (ie. all lines drawn on it will appear on top of all other elements).
 
 The `[data-immanuel-angle]` elements represent the Asc, Desc, MC and IC (the Desc element is missing in the demo, simply because the font it uses lacks a glyph for it).
 

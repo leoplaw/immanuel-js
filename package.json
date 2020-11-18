@@ -1,6 +1,6 @@
 {
   "name": "immanuel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Highly customisable pure JavaScript astrology chart for visualising chart data from Immanuel API.",
   "main": "dist/immanuel.js",
   "scripts": {
