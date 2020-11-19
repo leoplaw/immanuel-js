@@ -1,4 +1,4 @@
-import Immanuel from './immanuel';
+import Immanuel from '../dist/immanuel.min';
 import chartData from './chartData';
 
 const immanuel = new Immanuel('#chart', {

@@ -2,7 +2,7 @@ import Options from './options';
 import Elements from './elements';
 import Chart from './chart';
 
-module.exports = class Immanuel {
+export default class Immanuel {
 
     constructor(selector, options = {}) {
         this.elements = Elements.create(selector);
