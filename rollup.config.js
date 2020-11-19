@@ -4,31 +4,15 @@ import { terser } from "rollup-plugin-terser";
 
 export default [{
   input: 'src/immanuel.js',
-  output: [
-    {
-      file: 'dist/immanuel.js',
-      format: 'cjs'
-    },
-    {
-      file: 'dist/immanuel.min.js',
-      format: 'es'
-    }
-  ],
-  plugins: [
-    resolve(),
-    babel({ babelHelpers: 'bundled' }),
-    terser()
-  ]
-},
-{
-  input: 'src/demo.js',
   output: {
-    file: 'dist/demo.js',
-    format: 'es'
+    file: 'dist/immanuel.js',
+    format: 'umd',
+    name: 'Immanuel'
   },
   plugins: [
     resolve(),
     babel({ babelHelpers: 'bundled' }),
     terser()
   ]
-}];
+}
+];

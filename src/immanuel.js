@@ -2,7 +2,7 @@ import Options from './options';
 import Elements from './elements';
 import Chart from './chart';
 
-export default class Immanuel {
+class Immanuel {
 
     constructor(selector, options = {}) {
         this.elements = Elements.create(selector);
@@ -21,3 +21,7 @@ export default class Immanuel {
     }
 
 }
+
+window.Immanuel = Immanuel;
+
+export default Immanuel;
