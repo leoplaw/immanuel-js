@@ -1,12 +1,24 @@
 # Immanuel.JS
 
-This package provides a fully-customisable, responsive-ready, pure JavaScript astrology chart. The main chart graphic elements are provided and styled by the developer, while elements such as aspects lines and house cusps are drawn via SVG, and are also fully customisable via CSS. See the `/demo` directory for an example.
+This package provides a fully-customisable, responsive-ready, pure JavaScript astrology chart. The main chart graphic elements are provided and styled by the developer, while elements such as aspects lines and house cusps are drawn via SVG, and are also fully customisable via CSS. See the `/demo` directory for an example, or visit https://immanuel.app.
 
 ## Installation
+
+Node projects:
 
 ```bash
 npm i immanuel
 ```
+then
+```javascript
+import 'immanuel';
+```
+Or:
+```html
+<script src="https://cdn.jsdelivr.net/gh/sunlight/immanuel-js@v1.2.0/dist/immanuel.js"></script>
+```
+
+Both of these will expose the global Immanuel class for use.
 
 ## Usage
 

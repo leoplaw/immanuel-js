@@ -14,5 +14,4 @@ export default [{
     babel({ babelHelpers: 'bundled' }),
     terser()
   ]
-}
-];
+}];
