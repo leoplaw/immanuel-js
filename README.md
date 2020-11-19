@@ -5,7 +5,7 @@ This package provides a fully-customisable, responsive-ready, pure JavaScript as
 ## Installation
 
 ```bash
-npm install immanuel
+npm i immanuel
 ```
 
 ## Usage

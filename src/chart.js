@@ -331,7 +331,7 @@ export default class Chart {
             }
 
             // Set position based on calculated offsets
-            let [absX, absY] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleTextTrack, angle);
+            let [absX, absY] = Utils.findRelativePoint(this.elements.angleTextTrack, angle);
 
             absX = Math.round(absX - leftOffset);
             absY = Math.round(absY - topOffset);
@@ -391,7 +391,7 @@ export default class Chart {
             const midpointAngle = angle + (houseWidthAngle - this.offsetAngle) / 2;
             const houseNumberElement = this.elements.houseNumbers[houseNumber];
 
-            let [x, y] = Utils.findGlobalPoint(this.elements.chart, this.elements.houseNumberTrack, midpointAngle);
+            let [x, y] = Utils.findRelativePoint(this.elements.houseNumberTrack, midpointAngle);
 
             x = Math.round(x - houseNumberElement.offsetWidth / 2);
             y = Math.round(y - houseNumberElement.offsetHeight / 2);
