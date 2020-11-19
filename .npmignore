@@ -1,6 +1,4 @@
 node_modules
 .babelrc.json
-chartData.js
-immanuel.min.js
 test*.js
 demo*

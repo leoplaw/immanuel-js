@@ -72,6 +72,16 @@
             </div>
         </div>
 
-        <script src="../dist/demo.js"></script>
+        <script type="module">
+            import '../dist/immanuel.js';
+            import chartData from './chartData.js';
+
+            const immanuel = new Immanuel('#chart', {
+                rotateSigns: false,
+                rotateAngleText: true,
+            });
+
+            immanuel.displayChart(chartData);
+        </script>
     </body>
 </html>
