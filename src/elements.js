@@ -84,7 +84,7 @@ export default class Elements {
             houseNumberElement.style.position = 'absolute';
             houseNumberElement.classList.add('immanuel__house-number', `house-number--${i}`);
             this.houseNumbers[i] = houseNumberElement;
-            this.chart.appendChild(houseNumberElement);
+            this.houseNumberTrack.appendChild(houseNumberElement);
         }
     }
 
@@ -97,7 +97,7 @@ export default class Elements {
             angleTextElement.classList.add('immanuel__angle-text', `angle-text--${planetClassName}`);
             angleTextElement.style.position = 'absolute';
             this.angleText[planetName] = angleTextElement;
-            this.chart.appendChild(angleTextElement);
+            this.angleTextTrack.appendChild(angleTextElement);
         });
     }
 
