@@ -68,7 +68,7 @@ export default class Chart {
 
     // Calculate the offset for all subsequent angles based on rotating the chart to the horizon line.
     setOffsetAngle() {
-        this.offsetAngle = this.options.rotateToHorizon ? this.chartData.angles.asc.chartAngle - 180 : 0;
+        this.offsetAngle = this.options.rotateToHorizon ? (this.chartData.angles.asc.chartAngle + 180) % 360 : 0;
     }
 
     // Rotate the chart visual to the horizon line.
