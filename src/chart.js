@@ -68,12 +68,12 @@ export default class Chart {
 
     // Calculate the offset for all subsequent angles based on rotating the chart to the horizon line.
     setOffsetAngle() {
-        this.offsetAngle = this.options.rotateToHorizon ? (this.chartData.angles.asc.chartAngle + 180) % 360 : 0;
+        this.offsetAngle = this.options.rotateToHorizon ? (180 - this.chartData.angles.asc.chartAngle) * -1 : 0;
     }
 
     // Rotate the chart visual to the horizon line.
     rotateChart() {
-        this.elements.chartBackground.style.transform = this.offsetAngle > 0 ? `rotate(${this.offsetAngle}deg)` : 'none';
+        this.elements.chartBackground.style.transform = this.offsetAngle !== 0 ? `rotate(${this.offsetAngle}deg)` : 'none';
     }
 
     // If any placeholders exist for available data, populate them.
@@ -319,7 +319,7 @@ export default class Chart {
                 let rotationAngle = angle * -1;
 
                 if (angle > 90 && angle < 270) {
-                    rotationAngle -= 180;
+                    rotationAngle += 180;
                 }
 
                 angleTextElement.style.transform = `rotate(${rotationAngle}deg)`;
