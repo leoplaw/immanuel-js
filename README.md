@@ -15,7 +15,7 @@ import 'immanuel';
 ```
 Or:
 ```html
-<script src="https://cdn.jsdelivr.net/gh/sunlight/immanuel-js@v1.2.1/dist/immanuel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/sunlight/immanuel-js@v1.x.x/dist/immanuel.js"></script>
 ```
 
 Both of these will expose the `Immanuel` class for use.
