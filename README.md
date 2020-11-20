@@ -15,10 +15,10 @@ import 'immanuel';
 ```
 Or:
 ```html
-<script src="https://cdn.jsdelivr.net/gh/sunlight/immanuel-js@v1.2.0/dist/immanuel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/sunlight/immanuel-js@v1.2.1/dist/immanuel.js"></script>
 ```
 
-Both of these will expose the global Immanuel class for use.
+Both of these will expose the `Immanuel` class for use.
 
 ## Usage
 
@@ -28,7 +28,7 @@ Elements are set up in the HTML using `data` attributes, and consist mostly of *
 
 Some of these may be omitted - for example, if your chart background graphic already includes the signs, then you can safely omit the `[data-immanuel-track="signs"]` element, and immanuel.js will not look for the sign glyphs.
 
-*Boundaries* define where things begin and end - for example `data-immanuel-boundary="house-start"` and `data-immanuel-boundary="house-end"` define where the house cusp lines should be drawn from and to.
+*Boundaries* define where things begin and end - for example `[data-immanuel-boundary="house-start"]` and `[data-immanuel-boundary="house-end"]` define where the house cusp lines should be drawn from and to.
 
 Take a look at `/demo/index.html` to see the elements that can go into a chart, and `/demo/immanuel.css` for a basic example of how to style everything to be (relatively) responsive. The demo uses a font to display astrological glyphs, but in practice anything can be used, including images.
 
