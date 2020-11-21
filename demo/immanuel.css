@@ -51,10 +51,18 @@ body {
 }
 
 [data-immanuel-track="planets"] {
-    top: 21%;
-    left: 21%;
-    width: 58%;
-    height: 58%;
+    top: 23%;
+    left: 23%;
+    width: 54%;
+    height: 54%;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-track="planets"] {
+        top: 21%;
+        left: 21%;
+        width: 58%;
+        height: 58%;
+    }
 }
 
 [data-immanuel-track="angle-text"] {
@@ -71,13 +79,6 @@ body {
     height: 16%;
 }
 
-[data-immanuel-boundary="house-end"] {
-    top: 17.75%;
-    left: 17.75%;
-    width: 64.5%;
-    height: 64.5%;
-}
-
 [data-immanuel-boundary="house-start"] {
     top: 69.5%;
     left: 69.5%;
@@ -85,18 +86,19 @@ body {
     height: 16%;
 }
 
+[data-immanuel-boundary="house-end"],
 [data-immanuel-boundary="angle-markers-end"] {
-    top: 17.5%;
-    left: 17.5%;
-    width: 65%;
-    height: 65%;
+    top: 17.75%;
+    left: 17.75%;
+    width: 64.5%;
+    height: 64.5%;
 }
 
 [data-immanuel-boundary="angle-markers-start"] {
-    top: 6px;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
 }
 
 [data-immanuel-boundary="aspect-end"] {
@@ -218,10 +220,17 @@ body {
 }
 
 .immanuel__angle-text {
-    font-size: 0.5em;
+    font-size: 0.4em;
+}
+.immanuel__angle-text .angle-text-minutes {
+    display: none;
 }
 @media only screen and (min-width: 620px) {
     .immanuel__angle-text {
         font-size: 0.7em;
+    }
+
+    .immanuel__angle-text .angle-text-minutes {
+        display: inline;
     }
 }
