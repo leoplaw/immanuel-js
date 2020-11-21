@@ -360,7 +360,8 @@ export default class Chart {
             const planetName = planetElement.getAttribute('data-immanuel-planet');
             const planet = this.planets[planetName];
             const markerAngle = planet.chartAngle - this.offsetAngle;
-            const planetAngle = planet.displayAngle - this.offsetAngle;
+            // If the difference is less than a degree, draw to original position to avoid visual weirdness
+            const planetAngle = (Math.abs(planet.displayAngle - planet.chartAngle) < 1 ? planet.chartAngle : planet.displayAngle) - this.offsetAngle;
             const planetDiameter = Math.max(planetElement.offsetWidth, planetElement.offsetHeight);
             const planetClassName = planetName.replace(' ', '-');
             const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersStartBoundary, markerAngle);
