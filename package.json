@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sunlight/immanuel-js.git"
+    "url": "git+https://github.com/theriftlab/immanuel-js.git"
   },
   "keywords": [
     "astrology",
@@ -18,12 +18,12 @@
     "birth",
     "natal"
   ],
-  "author": "Sunlight Digital",
+  "author": "Robert Davies",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/sunlight/immanuel-js/issues"
+    "url": "https://github.com/theriftlab/immanuel-js/issues"
   },
-  "homepage": "https://github.com/sunlight/immanuel-js#readme",
+  "homepage": "https://github.com/theriftlab/immanuel-js#readme",
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-class-properties": "^7.12.1",

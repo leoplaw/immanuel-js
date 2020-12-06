@@ -15,7 +15,7 @@ import 'immanuel';
 ```
 Or:
 ```html
-<script src="https://cdn.jsdelivr.net/gh/sunlight/immanuel-js@v1.x.x/dist/immanuel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/theriftlab/immanuel-js@v1.x.x/dist/immanuel.js"></script>
 ```
 
 Both of these will expose the `Immanuel` class for use.
@@ -62,4 +62,4 @@ All `[data-immanuel-hide]` attributes are removed once the chart is drawn, so th
 
 **Unsupported:** currently, displaying two sets of planets is not supported, eg. transits or synastry charts.
 
-This package is part of the [Immanuel astrology API](https://github.com/sunlight/immanuel-api) project, and is designed to be used with the JSON data it provides (hopefully some decent documentation for all this will appear soon).
+This package is part of the [Immanuel astrology API](https://github.com/theriftlab/immanuel-api) project, and is designed to be used with the JSON data it provides (hopefully some decent documentation for all this will appear soon).
