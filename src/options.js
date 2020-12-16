@@ -1,7 +1,7 @@
 export default class Options {
 
     static defaults = {
-        rotateToHorizon: true,
+        rotateChart: 'horizon',
         rotateSigns: true,
         rotateHouseNumbers: false,
         rotateAngleText: false,

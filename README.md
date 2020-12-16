@@ -46,11 +46,11 @@ An `options` object may also be passd as a second argument to the constructor, w
 
 Option|Type|Default|Purpose
 ------|----|-------|-------
-`rotateToHorizon`|Boolean|true|Whether or not to rotate the chart graphic so that the asc/desc line is horizontal.
+`rotateChart`|String|'horizon'|Rotate the chart graphic depending on the value: `'horizon'` rotates the chart so the horizon line is horizontal; `'asc'` rotates so the ascendant / descendant line is horizontal (same line as horizon for most house systems but different for some equal house systems) and '`none`' to not rotate the chart at all.
 `rotateSigns`|Boolean|true|If you have provided glyphs/graphics for the signs, this option will rotate them to always face outward around the zodiac wheel (eg. the sign at the top will be upright, the sign at the bottom will be upside-down, etc.) Setting to false will simply render them all upright.
 `rotateHouseNumbers`|Boolean|false|Does the same with the house numbers.
 `rotateAngleText`|Boolean|false|Does the same for the text next to each planet showing its angle.
-`angleFormat`|String|%D\&deg;%M\'|Formats the angle text next to each planet. Placeholders are: %D = degreee, %M = minute, and %S = second.
+`angleFormat`|String|'%D\&deg;%M\\''|Formats the angle text next to each planet. Placeholders are: %D = degreee, %M = minute, and %S = second.
 `lineOrder`|Array|['houses', 'angleMarkers', 'anglePointers', 'aspects']|Dictates the order in which the drawn lines will appear. The lines at the top of this list are drawn last - ie. in the default array, house lines will be drawn on top of aspect lines.
 `aspectOrder`|Array|['trine', 'sextile', 'semisextile', 'square', 'semisquare', 'sesquisquare', 'opposite', 'quintile', 'semiquintile', 'sesquiquintile', 'biquintile', 'quincunx']|Similar to above, only dictating the order in which the aspect lines will be drawn. By default, for example, trines and sextiles will be drawn over squares and oppositions.
 
