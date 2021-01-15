@@ -291,6 +291,12 @@ export default class Chart {
             const angle = planet.displayAngle - this.offsetAngle;
             const movement = planet.movement.toLowerCase();
 
+            // Remove any existing classes for movement & sign in case this is a redraw
+            const planetElementClassNames = [...planetElement.classList];
+            const planetMovementClassName = planetElementClassNames.find(className => /planet-movement--/.test(className));
+            const planetSignClassName = planetElementClassNames.find(className => /planet-sign--/.test(className));
+            planetElement.classList.remove(planetMovementClassName, planetSignClassName);
+
             // Add classes for planet movement & sign
             planetElement.classList.add('immanuel__planet-movement', `planet-movement--${movement}`);
             planetElement.classList.add('immanuel__planet-sign', `planet-sign--${planet.sign.toLowerCase()}`);
