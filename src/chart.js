@@ -295,6 +295,11 @@ export default class Chart {
             planetElement.classList.add('immanuel__planet-movement', `planet-movement--${movement}`);
             planetElement.classList.add('immanuel__planet-sign', `planet-sign--${planet.sign.toLowerCase()}`);
 
+            // Add attribute for angle
+            if (this.options.planetAngleAttribute) {
+                planetElement.setAttribute(this.options.planetAngleAttribute, Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat));
+            }
+
             // Position the planet
             let [x, y] = Utils.findRelativePoint(this.elements.planetTrack, angle);
 

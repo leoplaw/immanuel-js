@@ -6,6 +6,7 @@ export default class Options {
         rotateHouseNumbers: false,
         rotateAngleText: false,
         angleFormat: '%D&deg;%M\'',
+        planetAngleAttribute: null,
         lineOrder: [
             'houses',
             'angleMarkers',
