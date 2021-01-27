@@ -28,7 +28,7 @@ body {
 }
 
 [data-immanuel-background] {
-    background: url('chart-image.jpg') center center/80% 80% no-repeat;
+    background: url('../images/chart-background.jpg') center center/80% 80% no-repeat;
 }
 
 [data-immanuel-track],
@@ -50,28 +50,6 @@ body {
     height: 72%;
 }
 
-[data-immanuel-track="planets"] {
-    top: 23%;
-    left: 23%;
-    width: 54%;
-    height: 54%;
-}
-@media only screen and (min-width: 620px) {
-    [data-immanuel-track="planets"] {
-        top: 21%;
-        left: 21%;
-        width: 58%;
-        height: 58%;
-    }
-}
-
-[data-immanuel-track="angle-text"] {
-    top: 26.5%;
-    left: 26.5%;
-    width: 47%;
-    height: 47%;
-}
-
 [data-immanuel-track="house-numbers"] {
     top: 42%;
     left: 42%;
@@ -86,19 +64,11 @@ body {
     height: 16%;
 }
 
-[data-immanuel-boundary="house-end"],
-[data-immanuel-boundary="angle-markers-end"] {
+[data-immanuel-boundary="house-end"] {
     top: 17.75%;
     left: 17.75%;
     width: 64.5%;
     height: 64.5%;
-}
-
-[data-immanuel-boundary="angle-markers-start"] {
-    top: 4px;
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
 }
 
 [data-immanuel-boundary="aspect-end"] {
@@ -125,31 +95,6 @@ body {
     }
 }
 
-[data-immanuel-planet] {
-    display: inline-block;
-    padding: 0.2rem;
-    font-family: 'Astro';
-    font-size: 1.4rem;
-    line-height: 0.8;
-    text-align: center;
-}
-@media only screen and (min-width: 620px) {
-    [data-immanuel-planet] {
-        font-size: 2.2rem;
-    }
-}
-[data-immanuel-planet] .retrograde {
-    display: none;
-    position: absolute;
-    bottom: -0.1em;
-    right: -0.4em;
-    font-size: 0.8em;
-    color: #444;
-}
-[data-immanuel-planet].planet-movement--retrograde .retrograde {
-    display: block;
-}
-
 [data-immanuel-sign] {
     color: #888;
 }
@@ -172,8 +117,8 @@ body {
     font-size: 0.35em;
 }
 
-.immanuel__angle-marker,
-.immanuel__angle-pointer {
+.immanuel__primary-angle-marker,
+.immanuel__primary-angle-pointer {
     stroke: #AAA;
     stroke-width: 1px;
 }
@@ -188,15 +133,15 @@ body {
     font-size: 1.2em;
 }
 
-.immanuel__house-line {
+.immanuel__primary-house-line {
     stroke: #000;
     stroke-width: 1px;
 }
 
-.immanuel__house-line.house-line--1,
-.immanuel__house-line.house-line--4,
-.immanuel__house-line.house-line--7,
-.immanuel__house-line.house-line--10 {
+.immanuel__primary-house-line.house-line--1,
+.immanuel__primary-house-line.house-line--4,
+.immanuel__primary-house-line.house-line--7,
+.immanuel__primary-house-line.house-line--10 {
     stroke-width: 3px;
 }
 
@@ -217,20 +162,4 @@ body {
 
 .immanuel__aspect-line.aspect-line--quincunx {
     stroke: #0F0;
-}
-
-.immanuel__angle-text {
-    font-size: 0.4em;
-}
-.immanuel__angle-text .angle-text-minutes {
-    display: none;
-}
-@media only screen and (min-width: 620px) {
-    .immanuel__angle-text {
-        font-size: 0.7em;
-    }
-
-    .immanuel__angle-text .angle-text-minutes {
-        display: inline;
-    }
 }
