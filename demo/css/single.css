@@ -1,3 +1,10 @@
+[data-immanuel-track="angles"] {
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+}
+
 [data-immanuel-track="planets"] {
     top: 23%;
     left: 23%;
@@ -59,18 +66,36 @@
     display: block;
 }
 
-.immanuel__angle-text {
+[data-immanuel-angle] {
+    display: inline-block;
+    font-family: 'Astro';
+    font-size: 1.5rem;
+    text-align: center;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-angle] {
+        font-size: 2rem;
+    }
+}
+
+[data-immanuel-angle] [data-immanuel-placeholder] {
+    display: block;
+    font-family: sans-serif;
+    font-size: 0.35em;
+}
+
+.immanuel__primary-angle-text {
     font-size: 0.4em;
 }
-.immanuel__angle-text .angle-text-minutes {
+.immanuel__primary-angle-text .angle-text-minutes {
     display: none;
 }
 @media only screen and (min-width: 620px) {
-    .immanuel__angle-text {
+    .immanuel__primary-angle-text {
         font-size: 0.7em;
     }
 
-    .immanuel__angle-text .angle-text-minutes {
+    .immanuel__primary-angle-text .angle-text-minutes {
         display: inline;
     }
 }

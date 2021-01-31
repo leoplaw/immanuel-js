@@ -113,18 +113,8 @@ export default class Chart {
             this.setSigns();
         }
 
-        if (this.elements.angleTrack && this.elements.angles) {
-            this.setAngles('primary');
-        }
-
-        if (this.elements.secondaryAngleTrack && this.elements.secondaryAngles) {
-            this.setAngles('secondary');
-        }
-
+        this.setAngles();
         this.setPlanets();
-
-        // Refresh all drawn lines - this must be called after setPlanets()
-        // since the angle marker lines need the corrected position of each planet
         this.removeLines();
         this.drawLines();
     }
@@ -150,18 +140,7 @@ export default class Chart {
 
                 case 'houses':
                     this.setHouses();
-
-                        // if (this.elements.houseNumberTracks.primary) {
-                        //     this.setHouseNumbers('primary');
-                        // }
-
-                    // if (this.elements.secondaryHouseStartBoundary && this.elements.secondaryHouseEndBoundary) {
-                    //     this.setHouses('secondary');
-
-                    //     if (this.elements.secondaryHouseNumberTrack) {
-                    //         this.setHouseNumbers('secondary');
-                    //     }
-                    // }
+                    this.setHouseNumbers();
                     break;
 
                 case 'aspects':
@@ -173,21 +152,25 @@ export default class Chart {
 
     // Position the ASC / MC etc. angle labels.
     setAngles() {
-        this.elements.angles.forEach(angleElement => {
-            const angleName = angleElement.getAttribute('data-immanuel-angle');
-            const angle = this.chartData.primary.angles[angleName].chartAngle - this.offsetAngle;
+        for (const chartType of this.chartTypes) {
+            if (this.elements.angles[chartType]) {
+                this.elements.angles[chartType].forEach(angleElement => {
+                    const angleName = angleElement.getAttribute('data-immanuel-angle');
+                    const angle = this.chartData[chartType].angles[angleName].chartAngle - this.offsetAngle;
 
-            let [x, y] = Utils.findRelativePoint(this.elements.angleTrack, angle);
+                    let [x, y] = Utils.findRelativePoint(this.elements.angleTracks[chartType], angle);
 
-            x = Math.round(x - angleElement.offsetWidth / 2);
-            y = Math.round(y - angleElement.offsetHeight / 2);
+                    x = Math.round(x - angleElement.offsetWidth / 2);
+                    y = Math.round(y - angleElement.offsetHeight / 2);
 
-            Object.assign(angleElement.style, {
-                position: 'absolute',
-                left: x + 'px',
-                top: y + 'px',
-            });
-        });
+                    Object.assign(angleElement.style, {
+                        position: 'absolute',
+                        left: x + 'px',
+                        top: y + 'px',
+                    });
+                });
+            }
+        }
     }
 
     // Position the sign elements if they exist.
@@ -224,10 +207,7 @@ export default class Chart {
         }
 
         this.positionPlanets();
-
-        if (this.elements.angleTextTrack) {
-            this.setPlanetAngleText();
-        }
+        this.setPlanetAngleText();
     }
 
     // Reset planet angles to their potentially colliding defaults for resize.
@@ -341,43 +321,45 @@ export default class Chart {
     // Add angle text for each planet.
     setPlanetAngleText() {
         for (const chartType of this.chartTypes) {
-            for (const [planetName, planet] of Object.entries(this.planets[chartType])) {
-                const angle = planet.displayAngle - this.offsetAngle;
-                const angleTextElement = this.elements.angleText[planetName];
+            if (this.elements.angleTextTracks[chartType]) {
+                for (const [planetName, planet] of Object.entries(this.planets[chartType])) {
+                    const angle = planet.displayAngle - this.offsetAngle;
+                    const angleTextElement = this.elements.angleText[chartType][planetName];
 
-                // Add angle text & reset any previous rotation
-                angleTextElement.style.transform = 'none';
-                angleTextElement.innerHTML = Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat);
+                    // Add angle text & reset any previous rotation
+                    angleTextElement.style.transform = 'none';
+                    angleTextElement.innerHTML = Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat);
 
-                // Rotate & offset position if requested
-                if (this.options.rotateAngleText) {
-                    var leftOffset = angleTextElement.offsetWidth / 2;
-                    var topOffset = angleTextElement.offsetHeight / 2;
+                    // Rotate & offset position if requested
+                    if (this.options.rotateAngleText) {
+                        var leftOffset = angleTextElement.offsetWidth / 2;
+                        var topOffset = angleTextElement.offsetHeight / 2;
 
-                    let rotationAngle = angle * -1;
+                        let rotationAngle = angle * -1;
 
-                    if (angle > 90 && angle < 270) {
-                        rotationAngle += 180;
+                        if (angle > 90 && angle < 270) {
+                            rotationAngle += 180;
+                        }
+
+                        angleTextElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    }
+                    else {
+                        const [relX, relY] = Utils.findRelativePoint(this.elements.chart, angle);
+                        var leftOffset = angleTextElement.offsetWidth * (relX / this.elements.chart.offsetWidth);
+                        var topOffset = angleTextElement.offsetHeight * (relY / this.elements.chart.offsetHeight);
                     }
 
-                    angleTextElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    // Set position based on calculated offsets
+                    let [absX, absY] = Utils.findRelativePoint(this.elements.angleTextTracks[chartType], angle);
+
+                    absX = Math.round(absX - leftOffset);
+                    absY = Math.round(absY - topOffset);
+
+                    Object.assign(angleTextElement.style, {
+                        left: absX + 'px',
+                        top: absY + 'px',
+                    });
                 }
-                else {
-                    const [relX, relY] = Utils.findRelativePoint(this.elements.chart, angle);
-                    var leftOffset = angleTextElement.offsetWidth * (relX / this.elements.chart.offsetWidth);
-                    var topOffset = angleTextElement.offsetHeight * (relY / this.elements.chart.offsetHeight);
-                }
-
-                // Set position based on calculated offsets
-                let [absX, absY] = Utils.findRelativePoint(this.elements.angleTextTrack, angle);
-
-                absX = Math.round(absX - leftOffset);
-                absY = Math.round(absY - topOffset);
-
-                Object.assign(angleTextElement.style, {
-                    left: absX + 'px',
-                    top: absY + 'px',
-                });
             }
         }
     }
@@ -434,29 +416,32 @@ export default class Chart {
     }
 
     // Add house numbers.
-    setHouseNumbers(chartType) {
-        for (const [houseNumber, house] of Object.entries(this.chartData[chartType].houses)) {
-            const angle = house.chartAngle - this.offsetAngle;
-            const nextHouseNumber = houseNumber == 12 ? 1 : parseInt(houseNumber) + 1;
-            const nextHouseAngle = this.chartData[chartType].houses[nextHouseNumber].chartAngle;
-            const houseWidthAngle = (nextHouseAngle < angle ? nextHouseAngle + 360 : nextHouseAngle) - angle;
-            const midpointAngle = angle + (houseWidthAngle - this.offsetAngle) / 2;
-            // TODO: these 2 house number things need generating & switching between primary / secondary
-            const houseNumberElement = this.elements.houseNumbers[houseNumber];
+    setHouseNumbers() {
+        for (const chartType of this.chartTypes) {
+            if (this.elements.houseNumbers[chartType]) {
+                for (const [houseNumber, house] of Object.entries(this.chartData[chartType].houses)) {
+                    const angle = house.chartAngle - this.offsetAngle;
+                    const nextHouseNumber = houseNumber == 12 ? 1 : parseInt(houseNumber) + 1;
+                    const nextHouseAngle = this.chartData[chartType].houses[nextHouseNumber].chartAngle;
+                    const houseWidthAngle = (nextHouseAngle < angle ? nextHouseAngle + 360 : nextHouseAngle) - angle;
+                    const midpointAngle = angle + (houseWidthAngle - this.offsetAngle) / 2;
+                    const houseNumberElement = this.elements.houseNumbers[chartType][houseNumber];
 
-            let [x, y] = Utils.findRelativePoint(this.elements.houseNumberTrack, midpointAngle);
+                    let [x, y] = Utils.findRelativePoint(this.elements.houseNumberTracks[chartType], midpointAngle);
 
-            x = Math.round(x - houseNumberElement.offsetWidth / 2);
-            y = Math.round(y - houseNumberElement.offsetHeight / 2);
+                    x = Math.round(x - houseNumberElement.offsetWidth / 2);
+                    y = Math.round(y - houseNumberElement.offsetHeight / 2);
 
-            Object.assign(houseNumberElement.style, {
-                left: x + 'px',
-                top: y + 'px',
-            });
+                    Object.assign(houseNumberElement.style, {
+                        left: x + 'px',
+                        top: y + 'px',
+                    });
 
-            if (this.options.rotateHouseNumbers) {
-                const rotationAngle = (midpointAngle * -1) + 90;
-                houseNumberElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    if (this.options.rotateHouseNumbers) {
+                        const rotationAngle = (midpointAngle * -1) + 90;
+                        houseNumberElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    }
+                }
             }
         }
     }

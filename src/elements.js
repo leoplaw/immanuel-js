@@ -25,8 +25,17 @@ export default class Elements {
         this.aspectEndBoundary = this.chart.querySelector('[data-immanuel-boundary="aspect-end"]');
 
         // Per-chart-type elements
-        this.angleTrack = this.chart.querySelector('[data-immanuel-track="angles"]');
-        this.angleTextTrack = this.chart.querySelector('[data-immanuel-track="angle-text"]');
+        this.angleTracks = {
+            primary: this.chart.querySelector('[data-immanuel-track="angles"]'),
+            secondary: this.chart.querySelector('[data-immanuel-track="secondary-angles"]'),
+            transits: this.chart.querySelector('[data-immanuel-track="transit-angles"]'),
+        }
+
+        this.angleTextTracks = {
+            primary: this.chart.querySelector('[data-immanuel-track="angle-text"]'),
+            secondary: this.chart.querySelector('[data-immanuel-track="secondary-angle-text"]'),
+            transits: this.chart.querySelector('[data-immanuel-track="transit-angle-text"]'),
+        }
 
         this.planetTracks = {
             primary: this.chart.querySelector('[data-immanuel-track="planets"]'),
@@ -64,18 +73,12 @@ export default class Elements {
             transits: this.chart.querySelector('[data-immanuel-boundary="transit-angle-markers-end"]'),
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Elements for the secondary chart, should one be requested
-        this.secondaryAngleTrack = this.chart.querySelector('[data-immanuel-track="secondary-angles"]');
-        this.secondaryAngleTextTrack = this.chart.querySelector('[data-immanuel-track="secondary-angle-text"]');
-
-        // Elements for the transits, should they be requested
-        this.transitAngleTextTrack = this.chart.querySelector('[data-immanuel-track="transit-angle-text"]');
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
         // Chart elements provided by users
-        this.angles = this.chart.querySelectorAll('[data-immanuel-angle]');
-        // this.secondaryAngles = this.chart.querySelectorAll('[data-immanuel-secondary-angle]');
+        this.angles = {
+            primary: this.angleTracks.primary.querySelectorAll('[data-immanuel-angle]'),
+            secondary: this.angleTracks.secondary ? this.angleTracks.secondary.querySelectorAll('[data-immanuel-angle]') : null,
+            transits: this.angleTracks.transits ? this.angleTracks.transits.querySelectorAll('[data-immanuel-angle]') : null,
+        }
 
         this.planets = {
             primary: this.planetTracks.primary.querySelectorAll('[data-immanuel-planet]'),
@@ -85,22 +88,11 @@ export default class Elements {
 
         // Create extra elements the chart will need
         this.chartLines = [];
-        this.houseNumbers = [];
+        this.houseNumbers = {};
         this.angleText = {};
 
-        // TODO: replicate for secondary & transits
-        if (this.houseNumberTrack) {
-            this.createHouseNumberElements();
-        }
-
-        if (this.angleTextTrack) {
-            this.createAngleTextElements();
-        }
-
-        if (this.markerTrack) {
-            this.createInnerMarkerTrackElement();
-        }
-
+        this.createHouseNumberElements();
+        this.createAngleTextElements();
         this.createSvgElement();
     }
 
@@ -128,28 +120,36 @@ export default class Elements {
 
     // Set up house numbers
     createHouseNumberElements() {
-        for (let i = 1; i <= 12; ++i) {
-            const houseNumberElement = document.createElement('span');
-            houseNumberElement.textContent = i;
-            houseNumberElement.style.position = 'absolute';
-            houseNumberElement.classList.add('immanuel__house-number', `house-number--${i}`);
-            this.houseNumbers[i] = houseNumberElement;
-            this.houseNumberTrack.appendChild(houseNumberElement);
+        for (const [chartType, houseNumberTrack] of Object.entries(this.houseNumberTracks)) {
+            if (houseNumberTrack) {
+                this.houseNumbers[chartType] = [];
+
+                for (let i = 1; i <= 12; ++i) {
+                    const houseNumberElement = document.createElement('span');
+                    houseNumberElement.textContent = i;
+                    houseNumberElement.style.position = 'absolute';
+                    houseNumberElement.classList.add(`immanuel__${chartType}-house-number`, `house-number--${i}`);
+                    this.houseNumbers[chartType][i] = houseNumberElement;
+                    this.houseNumberTracks[chartType].appendChild(houseNumberElement);
+                }
+            }
         }
     }
 
     // Create elements to display each planet's angle
     createAngleTextElements() {
-        for (const [chartType, planets] of Object.entries(this.planets)) {
-            if (planets !== null) {
-                planets.forEach(planetElement => {
+        for (const [chartType, angleTextTrack] of Object.entries(this.angleTextTracks)) {
+            if (angleTextTrack) {
+                this.angleText[chartType] = {};
+
+                this.planets[chartType].forEach(planetElement => {
                     const planetName = planetElement.getAttribute('data-immanuel-planet');
                     const planetClassName = planetName.replace(' ', '-');
                     const angleTextElement = document.createElement('div');
-                    angleTextElement.classList.add('immanuel__angle-text', `angle-text--${planetClassName}`);
+                    angleTextElement.classList.add(`immanuel__${chartType}-angle-text`, `angle-text--${planetClassName}`);
                     angleTextElement.style.position = 'absolute';
-                    this.angleText[planetName] = angleTextElement;
-                    this.angleTextTrack.appendChild(angleTextElement);
+                    this.angleText[chartType][planetName] = angleTextElement;
+                    angleTextTrack.appendChild(angleTextElement);
                 });
             }
         }

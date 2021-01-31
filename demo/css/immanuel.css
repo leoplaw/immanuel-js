@@ -36,13 +36,6 @@ body {
     position: absolute;
 }
 
-[data-immanuel-track="angles"] {
-    top: 5%;
-    left: 5%;
-    width: 90%;
-    height: 90%;
-}
-
 [data-immanuel-track="signs"] {
     top: 14%;
     left: 14%;
@@ -99,31 +92,13 @@ body {
     color: #888;
 }
 
-[data-immanuel-angle] {
-    display: inline-block;
-    font-family: 'Astro';
-    font-size: 1.5rem;
-    text-align: center;
-}
-@media only screen and (min-width: 620px) {
-    [data-immanuel-angle] {
-        font-size: 2rem;
-    }
-}
-
-[data-immanuel-angle] [data-immanuel-placeholder] {
-    display: block;
-    font-family: sans-serif;
-    font-size: 0.35em;
-}
-
 .immanuel__primary-angle-marker,
 .immanuel__primary-angle-pointer {
     stroke: #AAA;
     stroke-width: 1px;
 }
 
-.immanuel__house-number {
+.immanuel__primary-house-number {
     display: flex;
     justify-content: center;
     align-items: center;
