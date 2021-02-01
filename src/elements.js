@@ -21,10 +21,15 @@ export default class Elements {
 
         // Universal elements for all chart types
         this.signs = this.chart.querySelectorAll('[data-immanuel-sign]');
-        this.placeholders = this.chart.querySelectorAll('[data-immanuel-placeholder]');
         this.aspectEndBoundary = this.chart.querySelector('[data-immanuel-boundary="aspect-end"]');
 
         // Per-chart-type elements
+        this.placeholders = {
+            primary: this.chart.querySelectorAll('[data-immanuel-placeholder]'),
+            secondary: this.chart.querySelectorAll('[data-immanuel-secondary-placeholder]'),
+            transits: this.chart.querySelectorAll('[data-immanuel-transit-placeholder]'),
+        }
+
         this.angleTracks = {
             primary: this.chart.querySelector('[data-immanuel-track="angles"]'),
             secondary: this.chart.querySelector('[data-immanuel-track="secondary-angles"]'),

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Immanuel</title>
+
+        <link rel="stylesheet" href="css/fonts.css">
+        <link rel="stylesheet" href="css/immanuel.css">
+        <link rel="stylesheet" href="css/single.css">
+        <link rel="stylesheet" href="css/transits.css">
+    </head>
+
+    <body>
+        <div class="chart-container" data-immanuel-hide>
+            <div class="chart-square">
+                <div id="chart">
+                    <div data-immanuel-background></div>
+                    <div class="multiple-divider"></div>
+                    <div data-immanuel-lines></div>
+
+                    <div data-immanuel-track="signs">
+                        <div data-immanuel-sign="aries">A</div>
+                        <div data-immanuel-sign="taurus">B</div>
+                        <div data-immanuel-sign="gemini">C</div>
+                        <div data-immanuel-sign="cancer">D</div>
+                        <div data-immanuel-sign="leo">E</div>
+                        <div data-immanuel-sign="virgo">F</div>
+                        <div data-immanuel-sign="libra">G</div>
+                        <div data-immanuel-sign="scorpio">H</div>
+                        <div data-immanuel-sign="sagittarius">I</div>
+                        <div data-immanuel-sign="capricorn">J</div>
+                        <div data-immanuel-sign="aquarius">K</div>
+                        <div data-immanuel-sign="pisces">L</div>
+                    </div>
+
+                    <div class="primary-chart">
+                        <div data-immanuel-track="angles">
+                            <div data-immanuel-angle="asc">a<span data-immanuel-placeholder="asc"></span></div>
+                            <div data-immanuel-angle="mc">b<span data-immanuel-placeholder="mc"></span></div>
+                            <div data-immanuel-angle="ic">c<span data-immanuel-placeholder="ic"></span></div>
+                        </div>
+
+                        <div data-immanuel-track="angle-text"></div>
+                        <div data-immanuel-track="house-numbers"></div>
+                        <div data-immanuel-boundary="aspect-end"></div>
+
+                        <div data-immanuel-boundary="house-end">
+                            <div data-immanuel-boundary="house-start"></div>
+                        </div>
+
+                        <div data-immanuel-boundary="angle-markers-end">
+                            <div data-immanuel-boundary="angle-markers-start"></div>
+                        </div>
+
+                        <div data-immanuel-track="planets">
+                            <div data-immanuel-planet="north node" data-immanuel-no-aspects>&lt;</div>
+                            <div data-immanuel-planet="south node" data-immanuel-no-aspects>&gt;</div>
+                            <div data-immanuel-planet="pars fortuna" data-immanuel-no-aspects>?</div>
+
+                            <div data-immanuel-planet="sun">Q</div>
+                            <div data-immanuel-planet="moon">R</div>
+                            <div data-immanuel-planet="mercury">S<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="venus">T<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="mars">U<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="jupiter">V<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="saturn">W<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="uranus">X<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="neptune">Y<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="pluto">Z<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="chiron">t<div class="retrograde">M</div></div>
+                        </div>
+                    </div>
+
+                    <div class="transit-chart">
+                        <div data-immanuel-boundary="transit-angle-markers-end">
+                            <div data-immanuel-boundary="transit-angle-markers-start"></div>
+                        </div>
+
+                        <div data-immanuel-track="transit-planets">
+                            <div data-immanuel-planet="north node" data-immanuel-no-aspects>&lt;</div>
+                            <div data-immanuel-planet="south node" data-immanuel-no-aspects>&gt;</div>
+                            <div data-immanuel-planet="pars fortuna" data-immanuel-no-aspects>?</div>
+
+                            <div data-immanuel-planet="sun">Q</div>
+                            <div data-immanuel-planet="moon">R</div>
+                            <div data-immanuel-planet="mercury">S<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="venus">T<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="mars">U<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="jupiter">V<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="saturn">W<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="uranus">X<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="neptune">Y<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="pluto">Z<div class="retrograde">M</div></div>
+                            <div data-immanuel-planet="chiron">t<div class="retrograde">M</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="module">
+            import '../dist/immanuel.js';
+            import chartData from './data/transitChartData.js';
+
+            const immanuel = new Immanuel('#chart', {
+                rotateSigns: false,
+                angleFormat: '%D°%M\'',
+                rotateAngleText: true,
+                planetAngleAttribute: 'title',
+            });
+
+            immanuel.displayChart(chartData);
+        </script>
+    </body>
+</html>

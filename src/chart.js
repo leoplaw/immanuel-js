@@ -59,11 +59,7 @@ export default class Chart {
 
         this.setOffsetAngle();
         this.rotateChart();
-
-        if (this.elements.placeholders) {
-            this.setPlaceholderData();
-        }
-
+        this.setPlaceholderData();
         this.setupChart();
 
         // Now unhide it
@@ -92,18 +88,23 @@ export default class Chart {
 
     // If any placeholders exist for available data, populate them.
     setPlaceholderData() {
-        this.elements.placeholders.forEach(placeholderElement => {
-            const angleType = placeholderElement.getAttribute('data-immanuel-placeholder');
+        for (const chartType of this.chartTypes) {
+            if (this.elements.placeholders[chartType]) {
+                this.elements.placeholders[chartType].forEach(placeholderElement => {
+                    const attributeName = placeholderElement.getAttributeNames().find(attribute => /-placeholder$/.test(attribute));
+                    const placeholder = placeholderElement.getAttribute(attributeName);
 
-            switch (angleType) {
-                case 'asc':
-                case 'desc':
-                case 'mc':
-                case 'ic':
-                    placeholderElement.innerHTML = Utils.formatAngleString(this.chartData.primary.angles[angleType].formattedSignAngle, this.options.angleFormat);
-                    break;
+                    switch (placeholder) {
+                        case 'asc':
+                        case 'desc':
+                        case 'mc':
+                        case 'ic':
+                            placeholderElement.innerHTML = Utils.formatAngleString(this.chartData[chartType].angles[placeholder].formattedSignAngle, this.options.angleFormat);
+                            break;
+                    }
+                });
             }
-        });
+        }
     }
 
     // Set up all the chart's dynamic elements.
@@ -391,9 +392,11 @@ export default class Chart {
                     const planetAngle = (Math.abs(planet.displayAngle - planet.chartAngle) < 1 ? planet.chartAngle : planet.displayAngle) - this.offsetAngle;
                     const planetDiameter = Math.max(planetElement.offsetWidth, planetElement.offsetHeight);
                     const planetClassName = planetName.replace(' ', '-');
+                    // Work out if the pointer is pointing inwards as standard or outward (eg. if transits are outside the chart)
+                    const markerOffsetMultiplier = this.elements.angleMarkersEndBoundaries[chartType].offsetWidth - this.elements.angleMarkersStartBoundaries[chartType].offsetWidth > 0 ? 1 : -1;
                     const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersStartBoundaries[chartType], markerAngle);
-                    const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTracks[chartType], planetAngle, planetDiameter + 10);
-                    const [x3, y3] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTracks[chartType], planetAngle, planetDiameter);
+                    const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTracks[chartType], planetAngle, (planetDiameter + 10) * markerOffsetMultiplier);
+                    const [x3, y3] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTracks[chartType], planetAngle, planetDiameter * markerOffsetMultiplier);
                     this.drawLine(x1, y1, x2, y2, `immanuel__${chartType}-angle-pointer`, `angle-pointer--${planetClassName}`);
                     this.drawLine(x2, y2, x3, y3, `immanuel__${chartType}-angle-pointer`, `angle-pointer--${planetClassName}`);
                 });
