@@ -58,8 +58,10 @@ Pretty much everything else can be controlled by the developer via HTML and CSS,
 
 All `[data-immanuel-hide]` attributes are removed once the chart is drawn, so this can be applied to your chart's container element and set to `visibility: hidden` in your CSS to avoid the dreaded FOUC.
 
-## Info
+## Multiple Charts
 
-**Unsupported:** currently, displaying two sets of planets is not supported, eg. transits or synastry charts.
+When displaying data from multiple charts, for example natal + transits, or synastries, all the planet, angle, placeholder, house and house number elements are also available for the secondary and/or transit chart(s). Various attribute names or values simply need "secondary" or "transit" added in - please see the `/demo` directory's `multiple.html` and `transits.html` to see these in action.
+
+## Info
 
 This package is part of the [Immanuel astrology API](https://github.com/theriftlab/immanuel-api) project, and is designed to be used with the JSON data it provides (hopefully some decent documentation for all this will appear soon).
