@@ -1,0 +1,140 @@
+[data-immanuel-hide] {
+    visibility: hidden;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+.chart-container {
+    margin: 50px auto 0 auto;
+    max-width: 800px;
+    overflow: hidden;
+}
+
+.chart-square {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+}
+
+#chart,
+[data-immanuel-background] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+[data-immanuel-background] {
+    background: url('../images/chart-background.jpg') center center/80% 80% no-repeat;
+}
+
+[data-immanuel-track],
+[data-immanuel-boundary] {
+    position: absolute;
+}
+
+[data-immanuel-track="signs"] {
+    top: 14%;
+    left: 14%;
+    width: 72%;
+    height: 72%;
+}
+
+[data-immanuel-track="house-numbers"] {
+    top: 42%;
+    left: 42%;
+    width: 16%;
+    height: 16%;
+}
+
+[data-immanuel-boundary="house-start"] {
+    top: 69.5%;
+    left: 69.5%;
+    width: 16%;
+    height: 16%;
+}
+
+[data-immanuel-boundary="house-end"] {
+    top: 17.75%;
+    left: 17.75%;
+    width: 64.5%;
+    height: 64.5%;
+}
+
+[data-immanuel-boundary="aspect-end"] {
+    top: 32.5%;
+    left: 32.5%;
+    width: 35%;
+    height: 35%;
+}
+
+[data-immanuel-sign] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-family: 'Astro';
+    font-size: 1.3rem;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-sign] {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 2.2rem;
+    }
+}
+
+[data-immanuel-sign] {
+    color: #888;
+}
+
+.immanuel__primary-angle-marker,
+.immanuel__primary-angle-pointer {
+    stroke: #AAA;
+    stroke-width: 1px;
+}
+
+.immanuel__primary-house-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.2em;
+    height: 1.2em;
+    font-family: 'Astro';
+    font-size: 1.2em;
+}
+
+.immanuel__primary-house-line {
+    stroke: #000;
+    stroke-width: 1px;
+}
+
+.immanuel__primary-house-line.house-line--1,
+.immanuel__primary-house-line.house-line--4,
+.immanuel__primary-house-line.house-line--7,
+.immanuel__primary-house-line.house-line--10 {
+    stroke-width: 3px;
+}
+
+.immanuel__aspect-line {
+    stroke: none;
+    stroke-width: 1px;
+}
+
+.immanuel__aspect-line.aspect-line--opposite,
+.immanuel__aspect-line.aspect-line--square {
+    stroke: #F00;
+}
+
+.immanuel__aspect-line.aspect-line--trine,
+.immanuel__aspect-line.aspect-line--sextile {
+    stroke: #00F;
+}
+
+.immanuel__aspect-line.aspect-line--quincunx {
+    stroke: #0F0;
+}

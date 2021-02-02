@@ -14,43 +14,90 @@ export default class Elements {
             return false;
         }
 
-        // Container, boundaries & tracks provided by the user
+        // Main chart graphics
         this.chartSvgContainer = this.chart.querySelector('[data-immanuel-lines]');
         this.chartBackground = this.chart.querySelector('[data-immanuel-background]');
-        this.angleTrack = this.chart.querySelector('[data-immanuel-track="angles"]');
         this.signTrack = this.chart.querySelector('[data-immanuel-track="signs"]');
-        this.planetTrack = this.chart.querySelector('[data-immanuel-track="planets"]');
-        this.angleTextTrack = this.chart.querySelector('[data-immanuel-track="angle-text"]');
-        this.houseNumberTrack = this.chart.querySelector('[data-immanuel-track="house-numbers"]');
-        this.houseStartBoundary = this.chart.querySelector('[data-immanuel-boundary="house-start"]');
-        this.houseEndBoundary = this.chart.querySelector('[data-immanuel-boundary="house-end"]');
-        this.angleMarkersStartBoundary = this.chart.querySelector('[data-immanuel-boundary="angle-markers-start"]');
-        this.angleMarkersEndBoundary = this.chart.querySelector('[data-immanuel-boundary="angle-markers-end"]');
+
+        // Universal elements for all chart types
+        this.signs = this.chart.querySelectorAll('[data-immanuel-sign]');
         this.aspectEndBoundary = this.chart.querySelector('[data-immanuel-boundary="aspect-end"]');
 
+        // Per-chart-type elements
+        this.placeholders = {
+            primary: this.chart.querySelectorAll('[data-immanuel-placeholder]'),
+            secondary: this.chart.querySelectorAll('[data-immanuel-secondary-placeholder]'),
+            transits: this.chart.querySelectorAll('[data-immanuel-transit-placeholder]'),
+        }
+
+        this.angleTracks = {
+            primary: this.chart.querySelector('[data-immanuel-track="angles"]'),
+            secondary: this.chart.querySelector('[data-immanuel-track="secondary-angles"]'),
+            transits: this.chart.querySelector('[data-immanuel-track="transit-angles"]'),
+        }
+
+        this.angleTextTracks = {
+            primary: this.chart.querySelector('[data-immanuel-track="angle-text"]'),
+            secondary: this.chart.querySelector('[data-immanuel-track="secondary-angle-text"]'),
+            transits: this.chart.querySelector('[data-immanuel-track="transit-angle-text"]'),
+        }
+
+        this.planetTracks = {
+            primary: this.chart.querySelector('[data-immanuel-track="planets"]'),
+            secondary: this.chart.querySelector('[data-immanuel-track="secondary-planets"]'),
+            transits: this.chart.querySelector('[data-immanuel-track="transit-planets"]'),
+        }
+
+        this.houseNumberTracks = {
+            primary: this.chart.querySelector('[data-immanuel-track="house-numbers"]'),
+            secondary: this.chart.querySelector('[data-immanuel-track="secondary-house-numbers"]'),
+            transits: this.chart.querySelector('[data-immanuel-track="transit-house-numbers"]'),
+        }
+
+        this.houseStartBoundaries = {
+            primary: this.chart.querySelector('[data-immanuel-boundary="house-start"]'),
+            secondary: this.chart.querySelector('[data-immanuel-boundary="secondary-house-start"]'),
+            transits: this.chart.querySelector('[data-immanuel-boundary="transit-house-start"]'),
+        }
+
+        this.houseEndBoundaries = {
+            primary: this.chart.querySelector('[data-immanuel-boundary="house-end"]'),
+            secondary: this.chart.querySelector('[data-immanuel-boundary="secondary-house-end"]'),
+            transits: this.chart.querySelector('[data-immanuel-boundary="transit-house-end"]'),
+        }
+
+        this.angleMarkersStartBoundaries = {
+            primary: this.chart.querySelector('[data-immanuel-boundary="angle-markers-start"]'),
+            secondary: this.chart.querySelector('[data-immanuel-boundary="secondary-angle-markers-start"]'),
+            transits: this.chart.querySelector('[data-immanuel-boundary="transit-angle-markers-start"]'),
+        }
+
+        this.angleMarkersEndBoundaries = {
+            primary: this.chart.querySelector('[data-immanuel-boundary="angle-markers-end"]'),
+            secondary: this.chart.querySelector('[data-immanuel-boundary="secondary-angle-markers-end"]'),
+            transits: this.chart.querySelector('[data-immanuel-boundary="transit-angle-markers-end"]'),
+        }
+
         // Chart elements provided by users
-        this.angles = this.chart.querySelectorAll('[data-immanuel-angle]');
-        this.signs = this.chart.querySelectorAll('[data-immanuel-sign]');
-        this.planets = this.chart.querySelectorAll('[data-immanuel-planet]');
-        this.placeholders = this.chart.querySelectorAll('[data-immanuel-placeholder]');
+        this.angles = {
+            primary: this.angleTracks.primary.querySelectorAll('[data-immanuel-angle]'),
+            secondary: this.angleTracks.secondary ? this.angleTracks.secondary.querySelectorAll('[data-immanuel-angle]') : null,
+            transits: this.angleTracks.transits ? this.angleTracks.transits.querySelectorAll('[data-immanuel-angle]') : null,
+        }
+
+        this.planets = {
+            primary: this.planetTracks.primary.querySelectorAll('[data-immanuel-planet]'),
+            secondary: this.planetTracks.secondary ? this.planetTracks.secondary.querySelectorAll('[data-immanuel-planet]') : null,
+            transits: this.planetTracks.transits ? this.planetTracks.transits.querySelectorAll('[data-immanuel-planet]') : null,
+        }
 
         // Create extra elements the chart will need
         this.chartLines = [];
-        this.houseNumbers = [];
+        this.houseNumbers = {};
         this.angleText = {};
 
-        if (this.houseNumberTrack) {
-            this.createHouseNumberElements();
-        }
-
-        if (this.angleTextTrack) {
-            this.createAngleTextElements();
-        }
-
-        if (this.markerTrack) {
-            this.createInnerMarkerTrackElement();
-        }
-
+        this.createHouseNumberElements();
+        this.createAngleTextElements();
         this.createSvgElement();
     }
 
@@ -78,27 +125,39 @@ export default class Elements {
 
     // Set up house numbers
     createHouseNumberElements() {
-        for (let i = 1; i <= 12; ++i) {
-            const houseNumberElement = document.createElement('span');
-            houseNumberElement.textContent = i;
-            houseNumberElement.style.position = 'absolute';
-            houseNumberElement.classList.add('immanuel__house-number', `house-number--${i}`);
-            this.houseNumbers[i] = houseNumberElement;
-            this.houseNumberTrack.appendChild(houseNumberElement);
+        for (const [chartType, houseNumberTrack] of Object.entries(this.houseNumberTracks)) {
+            if (houseNumberTrack) {
+                this.houseNumbers[chartType] = [];
+
+                for (let i = 1; i <= 12; ++i) {
+                    const houseNumberElement = document.createElement('span');
+                    houseNumberElement.textContent = i;
+                    houseNumberElement.style.position = 'absolute';
+                    houseNumberElement.classList.add(`immanuel__${chartType}-house-number`, `house-number--${i}`);
+                    this.houseNumbers[chartType][i] = houseNumberElement;
+                    this.houseNumberTracks[chartType].appendChild(houseNumberElement);
+                }
+            }
         }
     }
 
     // Create elements to display each planet's angle
     createAngleTextElements() {
-        this.planets.forEach(planetElement => {
-            const planetName = planetElement.getAttribute('data-immanuel-planet');
-            const planetClassName = planetName.replace(' ', '-');
-            const angleTextElement = document.createElement('div');
-            angleTextElement.classList.add('immanuel__angle-text', `angle-text--${planetClassName}`);
-            angleTextElement.style.position = 'absolute';
-            this.angleText[planetName] = angleTextElement;
-            this.angleTextTrack.appendChild(angleTextElement);
-        });
+        for (const [chartType, angleTextTrack] of Object.entries(this.angleTextTracks)) {
+            if (angleTextTrack) {
+                this.angleText[chartType] = {};
+
+                this.planets[chartType].forEach(planetElement => {
+                    const planetName = planetElement.getAttribute('data-immanuel-planet');
+                    const planetClassName = planetName.replace(' ', '-');
+                    const angleTextElement = document.createElement('div');
+                    angleTextElement.classList.add(`immanuel__${chartType}-angle-text`, `angle-text--${planetClassName}`);
+                    angleTextElement.style.position = 'absolute';
+                    this.angleText[chartType][planetName] = angleTextElement;
+                    angleTextTrack.appendChild(angleTextElement);
+                });
+            }
+        }
     }
 
 }

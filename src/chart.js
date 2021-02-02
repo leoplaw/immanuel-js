@@ -9,35 +9,41 @@ export default class Chart {
     constructor(elements, options, chartData) {
         this.elements = elements;
         this.options = options;
-        this.chartData = chartData;
+        this.chartData = chartData.primary ? chartData : { primary: chartData };
+        this.chartTypes = Object.keys(this.chartData);
         this.offsetAngle = 0;
         this.planets = {};
-        this.aspectedPlanets = [];
+        this.aspectedPlanets = {};
         this.init();
     }
 
     // Set things up ready for drawing the chart.
     init() {
         // Collate all wanted planets regardless of type into the same map for simplicity
-        this.elements.planets.forEach(planetElement => {
-            const planetName = planetElement.getAttribute('data-immanuel-planet');
+        for (const chartType of this.chartTypes) {
+            this.planets[chartType] = {};
+            this.aspectedPlanets[chartType] = [];
 
-            // Find it
-            if (planetName in this.chartData.points) {
-                var planet = this.chartData.points[planetName];
-            }
-            else if (planetName in this.chartData.planets) {
-                var planet = this.chartData.planets[planetName];
-            }
+            this.elements.planets[chartType].forEach(planetElement => {
+                const planetName = planetElement.getAttribute('data-immanuel-planet');
 
-            // Store it
-            this.planets[planetName] = planet;
+                // Find it
+                if (planetName in this.chartData.primary.points) {
+                    var planet = this.chartData[chartType].points[planetName];
+                }
+                else if (planetName in this.chartData.primary.planets) {
+                    var planet = this.chartData[chartType].planets[planetName];
+                }
 
-            // Store which aspects we want to draw
-            if (!planetElement.hasAttribute('data-immanuel-no-aspects')) {
-                this.aspectedPlanets.push(planetName);
-            }
-        });
+                // Store it
+                this.planets[chartType][planetName] = planet;
+
+                // Store which aspects we want to draw
+                if (!planetElement.hasAttribute('data-immanuel-no-aspects')) {
+                    this.aspectedPlanets[chartType].push(planetName);
+                }
+            });
+        }
 
         // Ensure everything is redrawn on resize
         window.addEventListener('resize', () => { document.querySelectorAll('[data-immanuel-hide]').length || this.setupChart(); });
@@ -53,11 +59,7 @@ export default class Chart {
 
         this.setOffsetAngle();
         this.rotateChart();
-
-        if (this.elements.placeholders) {
-            this.setPlaceholderData();
-        }
-
+        this.setPlaceholderData();
         this.setupChart();
 
         // Now unhide it
@@ -69,10 +71,10 @@ export default class Chart {
     // Calculate the offset for all subsequent angles based on rotating the chart to the horizon line.
     setOffsetAngle() {
         if (this.options.rotateChart === 'asc') {
-            this.offsetAngle = (180 - this.chartData.angles.asc.chartAngle) * -1;
+            this.offsetAngle = (180 - this.chartData.primary.angles.asc.chartAngle) * -1;
         }
         else if (this.options.rotateChart === 'horizon') {
-            this.offsetAngle = (180 - this.chartData.houses[1].chartAngle) * -1;
+            this.offsetAngle = (180 - this.chartData.primary.houses[1].chartAngle) * -1;
         }
         else {
             this.offsetAngle = 0;
@@ -86,37 +88,34 @@ export default class Chart {
 
     // If any placeholders exist for available data, populate them.
     setPlaceholderData() {
-        this.elements.placeholders.forEach(placeholderElement => {
-            const angleType = placeholderElement.getAttribute('data-immanuel-placeholder');
+        for (const chartType of this.chartTypes) {
+            if (this.elements.placeholders[chartType]) {
+                this.elements.placeholders[chartType].forEach(placeholderElement => {
+                    const attributeName = placeholderElement.getAttributeNames().find(attribute => /-placeholder$/.test(attribute));
+                    const placeholder = placeholderElement.getAttribute(attributeName);
 
-            switch (angleType) {
-                case 'asc':
-                case 'desc':
-                case 'mc':
-                case 'ic':
-                    placeholderElement.innerHTML = Utils.formatAngleString(this.chartData.angles[angleType].formattedSignAngle, this.options.angleFormat);
-                    break;
+                    switch (placeholder) {
+                        case 'asc':
+                        case 'desc':
+                        case 'mc':
+                        case 'ic':
+                            placeholderElement.innerHTML = Utils.formatAngleString(this.chartData[chartType].angles[placeholder].formattedSignAngle, this.options.angleFormat);
+                            break;
+                    }
+                });
             }
-        });
+        }
     }
 
     // Set up all the chart's dynamic elements.
     setupChart() {
         // Set up HTML elements
-        if (this.elements.angleTrack && this.elements.angles) {
-            this.setAngles();
-        }
-
         if (this.elements.signTrack && this.elements.signs) {
             this.setSigns();
         }
 
-        if (this.elements.planetTrack && this.elements.planets) {
-            this.setPlanets();
-        }
-
-        // Refresh all drawn lines - this must be called after setPlanets()
-        // since the angle marker lines need the corrected position of each planet.
+        this.setAngles();
+        this.setPlanets();
         this.removeLines();
         this.drawLines();
     }
@@ -133,25 +132,16 @@ export default class Chart {
         this.options.lineOrder.reverse().forEach(lineType => {
             switch (lineType) {
                 case 'angleMarkers':
-                    if (this.elements.angleMarkersStartBoundary && this.elements.angleMarkersEndBoundary) {
-                        this.setPlanetAngleMarkers();
-                    }
+                    this.setPlanetAngleMarkers();
                     break;
 
                 case 'anglePointers':
-                    if (this.elements.angleMarkersStartBoundary) {
-                        this.setPlanetAnglePointers();
-                    }
+                    this.setPlanetAnglePointers('primary');
                     break;
 
                 case 'houses':
-                    if (this.elements.houseStartBoundary && this.elements.houseEndBoundary) {
-                        this.setHouses();
-
-                        if (this.elements.houseNumberTrack) {
-                            this.setHouseNumbers();
-                        }
-                    }
+                    this.setHouses();
+                    this.setHouseNumbers();
                     break;
 
                 case 'aspects':
@@ -161,23 +151,27 @@ export default class Chart {
         });
     }
 
-    // Position the ASC / MC etc. angle labels
+    // Position the ASC / MC etc. angle labels.
     setAngles() {
-        this.elements.angles.forEach(angleElement => {
-            const angleName = angleElement.getAttribute('data-immanuel-angle');
-            const angle = this.chartData.angles[angleName].chartAngle - this.offsetAngle;
+        for (const chartType of this.chartTypes) {
+            if (this.elements.angles[chartType]) {
+                this.elements.angles[chartType].forEach(angleElement => {
+                    const angleName = angleElement.getAttribute('data-immanuel-angle');
+                    const angle = this.chartData[chartType].angles[angleName].chartAngle - this.offsetAngle;
 
-            let [x, y] = Utils.findRelativePoint(this.elements.angleTrack, angle);
+                    let [x, y] = Utils.findRelativePoint(this.elements.angleTracks[chartType], angle);
 
-            x = Math.round(x - angleElement.offsetWidth / 2);
-            y = Math.round(y - angleElement.offsetHeight / 2);
+                    x = Math.round(x - angleElement.offsetWidth / 2);
+                    y = Math.round(y - angleElement.offsetHeight / 2);
 
-            Object.assign(angleElement.style, {
-                position: 'absolute',
-                left: x + 'px',
-                top: y + 'px',
-            });
-        });
+                    Object.assign(angleElement.style, {
+                        position: 'absolute',
+                        left: x + 'px',
+                        top: y + 'px',
+                    });
+                });
+            }
+        }
     }
 
     // Position the sign elements if they exist.
@@ -208,32 +202,35 @@ export default class Chart {
     // Set up the planets & their angles.
     setPlanets() {
         this.resetPlanetAngles();
-        this.resolvePlanetCollisions();
-        this.positionPlanets();
 
-        if (this.elements.angleTextTrack) {
-            this.setPlanetAngleText();
+        for (const chartType of this.chartTypes) {
+            this.resolvePlanetCollisions(chartType);
         }
+
+        this.positionPlanets();
+        this.setPlanetAngleText();
     }
 
     // Reset planet angles to their potentially colliding defaults for resize.
     resetPlanetAngles() {
-        Object.values(this.planets).forEach(planet => {
-            planet.displayAngle = planet.chartAngle;
-        });
+        for (const chartType of this.chartTypes) {
+            Object.values(this.planets[chartType]).forEach(planet => {
+                planet.displayAngle = planet.chartAngle;
+            });
+        }
     }
 
     // Space out planets when they collide with each other.
-    resolvePlanetCollisions() {
+    resolvePlanetCollisions(chartType) {
         // Form groups of colliding planets
         const collisionGroups = [];
 
-        this.elements.planets.forEach(planetElement => {
+        this.elements.planets[chartType].forEach(planetElement => {
             const planetName = planetElement.getAttribute('data-immanuel-planet');
-            const planet = this.planets[planetName];
+            const planet = this.planets[chartType][planetName];
 
             // For each planet, check whether it's colliding with another planet
-            this.elements.planets.forEach(testPlanetElement => {
+            this.elements.planets[chartType].forEach(testPlanetElement => {
                 const testPlanetName = testPlanetElement.getAttribute('data-immanuel-planet');
 
                 if (planetName === testPlanetName) {
@@ -241,10 +238,10 @@ export default class Chart {
                 }
 
                 // Test for collision here by checking for the gap between their centres being less than their combined radii
-                const testPlanet = this.planets[testPlanetName];
+                const testPlanet = this.planets[chartType][testPlanetName];
                 const planetRadius = Math.max(planetElement.offsetWidth, planetElement.offsetHeight) / 2;
                 const testPlanetRadius = Math.max(testPlanetElement.offsetWidth, testPlanetElement.offsetHeight) / 2;
-                const trackDiameter = this.elements.planetTrack.offsetWidth;
+                const trackDiameter = this.elements.planetTracks[chartType].offsetWidth;
                 const degreesBetween = Math.abs(planet.displayAngle - testPlanet.displayAngle);
                 const gapBetween = Math.abs(Math.sin(degreesBetween * (Math.PI / 360)) * trackDiameter);
 
@@ -279,151 +276,175 @@ export default class Chart {
                 collisionGroup[collisionGroup.length-1].displayAngle += 0.1;
             });
 
-            this.resolvePlanetCollisions();
+            this.resolvePlanetCollisions(chartType);
         }
     }
 
     // Position the planet elements.
     positionPlanets() {
-        this.elements.planets.forEach(planetElement => {
-            const planetName = planetElement.getAttribute('data-immanuel-planet');
-            const planet = this.planets[planetName];
-            const angle = planet.displayAngle - this.offsetAngle;
-            const movement = planet.movement.toLowerCase();
+        for (const chartType of this.chartTypes) {
+            this.elements.planets[chartType].forEach(planetElement => {
+                const planetName = planetElement.getAttribute('data-immanuel-planet');
+                const planet = this.planets[chartType][planetName];
+                const angle = planet.displayAngle - this.offsetAngle;
+                const movement = planet.movement.toLowerCase();
 
-            // Remove any existing classes for movement & sign in case this is a redraw
-            const planetElementClassNames = [...planetElement.classList];
-            const planetMovementClassName = planetElementClassNames.find(className => /planet-movement--/.test(className));
-            const planetSignClassName = planetElementClassNames.find(className => /planet-sign--/.test(className));
-            planetElement.classList.remove(planetMovementClassName, planetSignClassName);
+                // Remove any existing classes for movement & sign in case this is a redraw
+                const planetElementClassNames = [...planetElement.classList];
+                const planetMovementClassName = planetElementClassNames.find(className => /planet-movement--/.test(className));
+                const planetSignClassName = planetElementClassNames.find(className => /planet-sign--/.test(className));
+                planetElement.classList.remove(planetMovementClassName, planetSignClassName);
 
-            // Add classes for planet movement & sign
-            planetElement.classList.add('immanuel__planet-movement', `planet-movement--${movement}`);
-            planetElement.classList.add('immanuel__planet-sign', `planet-sign--${planet.sign.toLowerCase()}`);
+                // Add classes for planet movement & sign
+                planetElement.classList.add('immanuel__planet-movement', `planet-movement--${movement}`);
+                planetElement.classList.add('immanuel__planet-sign', `planet-sign--${planet.sign.toLowerCase()}`);
 
-            // Add attribute for angle
-            if (this.options.planetAngleAttribute) {
-                planetElement.setAttribute(this.options.planetAngleAttribute, Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat));
-            }
+                // Add attribute for angle
+                if (this.options.planetAngleAttribute) {
+                    planetElement.setAttribute(this.options.planetAngleAttribute, Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat));
+                }
 
-            // Position the planet
-            let [x, y] = Utils.findRelativePoint(this.elements.planetTrack, angle);
+                // Position the planet
+                let [x, y] = Utils.findRelativePoint(this.elements.planetTracks[chartType], angle);
 
-            x = Math.round(x - planetElement.offsetWidth / 2);
-            y = Math.round(y - planetElement.offsetHeight / 2);
+                x = Math.round(x - planetElement.offsetWidth / 2);
+                y = Math.round(y - planetElement.offsetHeight / 2);
 
-            Object.assign(planetElement.style, {
-                position: 'absolute',
-                left: x + 'px',
-                top: y + 'px',
+                Object.assign(planetElement.style, {
+                    position: 'absolute',
+                    left: x + 'px',
+                    top: y + 'px',
+                });
             });
-        });
+        }
     }
 
     // Add angle text for each planet.
     setPlanetAngleText() {
-        for (const [planetName, planet] of Object.entries(this.planets)) {
-            const angle = planet.displayAngle - this.offsetAngle;
-            const angleTextElement = this.elements.angleText[planetName];
+        for (const chartType of this.chartTypes) {
+            if (this.elements.angleTextTracks[chartType]) {
+                for (const [planetName, planet] of Object.entries(this.planets[chartType])) {
+                    const angle = planet.displayAngle - this.offsetAngle;
+                    const angleTextElement = this.elements.angleText[chartType][planetName];
 
-            // Add angle text & reset any previous rotation
-            angleTextElement.style.transform = 'none';
-            angleTextElement.innerHTML = Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat);
+                    // Add angle text & reset any previous rotation
+                    angleTextElement.style.transform = 'none';
+                    angleTextElement.innerHTML = Utils.formatAngleString(planet.formattedSignAngle, this.options.angleFormat);
 
-            // Rotate & offset position if requested
-            if (this.options.rotateAngleText) {
-                var leftOffset = angleTextElement.offsetWidth / 2;
-                var topOffset = angleTextElement.offsetHeight / 2;
+                    // Rotate & offset position if requested
+                    if (this.options.rotateAngleText) {
+                        var leftOffset = angleTextElement.offsetWidth / 2;
+                        var topOffset = angleTextElement.offsetHeight / 2;
 
-                let rotationAngle = angle * -1;
+                        let rotationAngle = angle * -1;
 
-                if (angle > 90 && angle < 270) {
-                    rotationAngle += 180;
+                        if (angle > 90 && angle < 270) {
+                            rotationAngle += 180;
+                        }
+
+                        angleTextElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    }
+                    else {
+                        const [relX, relY] = Utils.findRelativePoint(this.elements.chart, angle);
+                        var leftOffset = angleTextElement.offsetWidth * (relX / this.elements.chart.offsetWidth);
+                        var topOffset = angleTextElement.offsetHeight * (relY / this.elements.chart.offsetHeight);
+                    }
+
+                    // Set position based on calculated offsets
+                    let [absX, absY] = Utils.findRelativePoint(this.elements.angleTextTracks[chartType], angle);
+
+                    absX = Math.round(absX - leftOffset);
+                    absY = Math.round(absY - topOffset);
+
+                    Object.assign(angleTextElement.style, {
+                        left: absX + 'px',
+                        top: absY + 'px',
+                    });
                 }
-
-                angleTextElement.style.transform = `rotate(${rotationAngle}deg)`;
             }
-            else {
-                const [relX, relY] = Utils.findRelativePoint(this.elements.chart, angle);
-                var leftOffset = angleTextElement.offsetWidth * (relX / this.elements.chart.offsetWidth);
-                var topOffset = angleTextElement.offsetHeight * (relY / this.elements.chart.offsetHeight);
-            }
-
-            // Set position based on calculated offsets
-            let [absX, absY] = Utils.findRelativePoint(this.elements.angleTextTrack, angle);
-
-            absX = Math.round(absX - leftOffset);
-            absY = Math.round(absY - topOffset);
-
-            Object.assign(angleTextElement.style, {
-                left: absX + 'px',
-                top: absY + 'px',
-            });
         }
     }
 
     // Add the markers for each planet's original pre-collision-check placement.
     setPlanetAngleMarkers() {
-        for (const [planetName, planet] of Object.entries(this.planets)) {
-            const angle = planet.chartAngle - this.offsetAngle;
-            const planetClassName = planetName.replace(' ', '-');
-            const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersEndBoundary, angle);
-            const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersStartBoundary, angle);
-            this.drawLine(x1, y1, x2, y2, 'immanuel__angle-marker', `angle-marker--${planetClassName}`);
+        for (const chartType of this.chartTypes) {
+            if (this.elements.angleMarkersStartBoundaries[chartType] && this.elements.angleMarkersEndBoundaries[chartType]) {
+                for (const [planetName, planet] of Object.entries(this.planets[chartType])) {
+                    const angle = planet.chartAngle - this.offsetAngle;
+                    const planetClassName = planetName.replace(' ', '-');
+                    const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersEndBoundaries[chartType], angle);
+                    const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersStartBoundaries[chartType], angle);
+                    this.drawLine(x1, y1, x2, y2, `immanuel__${chartType}-angle-marker`, `angle-marker--${planetClassName}`);
+                }
+            }
         }
     }
 
     // Add lines from each angle marker to the planet's actual position.
     setPlanetAnglePointers() {
-        this.elements.planets.forEach(planetElement => {
-            const planetName = planetElement.getAttribute('data-immanuel-planet');
-            const planet = this.planets[planetName];
-            const markerAngle = planet.chartAngle - this.offsetAngle;
-            // If the difference is less than a degree, draw to original position to avoid visual weirdness
-            const planetAngle = (Math.abs(planet.displayAngle - planet.chartAngle) < 1 ? planet.chartAngle : planet.displayAngle) - this.offsetAngle;
-            const planetDiameter = Math.max(planetElement.offsetWidth, planetElement.offsetHeight);
-            const planetClassName = planetName.replace(' ', '-');
-            const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersStartBoundary, markerAngle);
-            const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTrack, planetAngle, planetDiameter + 10);
-            const [x3, y3] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTrack, planetAngle, planetDiameter);
-            this.drawLine(x1, y1, x2, y2, 'immanuel__angle-pointer', `angle-pointer--${planetClassName}`);
-            this.drawLine(x2, y2, x3, y3, 'immanuel__angle-pointer', `angle-pointer--${planetClassName}`);
-        });
+        for (const chartType of this.chartTypes) {
+            if (this.elements.angleMarkersStartBoundaries[chartType] && this.elements.angleMarkersEndBoundaries[chartType]) {
+                this.elements.planets[chartType].forEach(planetElement => {
+                    const planetName = planetElement.getAttribute('data-immanuel-planet');
+                    const planet = this.planets[chartType][planetName];
+                    const markerAngle = planet.chartAngle - this.offsetAngle;
+                    // If the difference is less than a degree, draw to original position to avoid visual weirdness
+                    const planetAngle = (Math.abs(planet.displayAngle - planet.chartAngle) < 1 ? planet.chartAngle : planet.displayAngle) - this.offsetAngle;
+                    const planetDiameter = Math.max(planetElement.offsetWidth, planetElement.offsetHeight);
+                    const planetClassName = planetName.replace(' ', '-');
+                    // Work out if the pointer is pointing inwards as standard or outward (eg. if transits are outside the chart)
+                    const markerOffsetMultiplier = this.elements.angleMarkersEndBoundaries[chartType].offsetWidth - this.elements.angleMarkersStartBoundaries[chartType].offsetWidth > 0 ? 1 : -1;
+                    const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.angleMarkersStartBoundaries[chartType], markerAngle);
+                    const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTracks[chartType], planetAngle, (planetDiameter + 10) * markerOffsetMultiplier);
+                    const [x3, y3] = Utils.findGlobalPoint(this.elements.chart, this.elements.planetTracks[chartType], planetAngle, planetDiameter * markerOffsetMultiplier);
+                    this.drawLine(x1, y1, x2, y2, `immanuel__${chartType}-angle-pointer`, `angle-pointer--${planetClassName}`);
+                    this.drawLine(x2, y2, x3, y3, `immanuel__${chartType}-angle-pointer`, `angle-pointer--${planetClassName}`);
+                });
+            }
+        }
     }
 
     // Draw the house cusp lines.
     setHouses() {
-        for (const [houseNumber, house] of Object.entries(this.chartData.houses)) {
-            const angle = house.chartAngle - this.offsetAngle;
-            const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.houseEndBoundary, angle);
-            const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.houseStartBoundary, angle);
-            this.drawLine(x1, y1, x2, y2, 'immanuel__house-line', `house-line--${houseNumber}`);
+        for (const chartType of this.chartTypes) {
+            if (this.elements.houseStartBoundaries[chartType] && this.elements.houseEndBoundaries[chartType]) {
+                for (const [houseNumber, house] of Object.entries(this.chartData[chartType].houses)) {
+                    const angle = house.chartAngle - this.offsetAngle;
+                    const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.houseEndBoundaries[chartType], angle);
+                    const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.houseStartBoundaries[chartType], angle);
+                    this.drawLine(x1, y1, x2, y2, `immanuel__${chartType}-house-line`, `house-line--${houseNumber}`);
+                }
+            }
         }
     }
 
-    // Add house numbers
+    // Add house numbers.
     setHouseNumbers() {
-        for (const [houseNumber, house] of Object.entries(this.chartData.houses)) {
-            const angle = house.chartAngle - this.offsetAngle;
-            const nextHouseNumber = houseNumber == 12 ? 1 : parseInt(houseNumber) + 1;
-            const nextHouseAngle = this.chartData.houses[nextHouseNumber].chartAngle;
-            const houseWidthAngle = (nextHouseAngle < angle ? nextHouseAngle + 360 : nextHouseAngle) - angle;
-            const midpointAngle = angle + (houseWidthAngle - this.offsetAngle) / 2;
-            const houseNumberElement = this.elements.houseNumbers[houseNumber];
+        for (const chartType of this.chartTypes) {
+            if (this.elements.houseNumbers[chartType]) {
+                for (const [houseNumber, house] of Object.entries(this.chartData[chartType].houses)) {
+                    const angle = house.chartAngle - this.offsetAngle;
+                    const nextHouseNumber = houseNumber == 12 ? 1 : parseInt(houseNumber) + 1;
+                    const nextHouseAngle = this.chartData[chartType].houses[nextHouseNumber].chartAngle;
+                    const houseWidthAngle = (nextHouseAngle < angle ? nextHouseAngle + 360 : nextHouseAngle) - angle;
+                    const midpointAngle = angle + (houseWidthAngle - this.offsetAngle) / 2;
+                    const houseNumberElement = this.elements.houseNumbers[chartType][houseNumber];
 
-            let [x, y] = Utils.findRelativePoint(this.elements.houseNumberTrack, midpointAngle);
+                    let [x, y] = Utils.findRelativePoint(this.elements.houseNumberTracks[chartType], midpointAngle);
 
-            x = Math.round(x - houseNumberElement.offsetWidth / 2);
-            y = Math.round(y - houseNumberElement.offsetHeight / 2);
+                    x = Math.round(x - houseNumberElement.offsetWidth / 2);
+                    y = Math.round(y - houseNumberElement.offsetHeight / 2);
 
-            Object.assign(houseNumberElement.style, {
-                left: x + 'px',
-                top: y + 'px',
-            });
+                    Object.assign(houseNumberElement.style, {
+                        left: x + 'px',
+                        top: y + 'px',
+                    });
 
-            if (this.options.rotateHouseNumbers) {
-                const rotationAngle = (midpointAngle * -1) + 90;
-                houseNumberElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    if (this.options.rotateHouseNumbers) {
+                        const rotationAngle = (midpointAngle * -1) + 90;
+                        houseNumberElement.style.transform = `rotate(${rotationAngle}deg)`;
+                    }
+                }
             }
         }
     }
@@ -433,20 +454,33 @@ export default class Chart {
         const aspectsToDraw = {};
         this.options.aspectOrder.reverse().forEach(aspectType => aspectsToDraw[aspectType] = []);
 
-        for (const [planetName, planet] of Object.entries(this.planets)) {
+        for (const [planetName, planet] of Object.entries(this.planets.primary)) {
             for (const [aspectedPlanetName, aspect] of Object.entries(planet.aspects)) {
-                const [startPlanetName, endPlanetName] = [planetName, aspectedPlanetName].sort();
-                const aspectType = aspect.type.toLowerCase();
+                if (this.options.maxOrb instanceof Object && this.options.maxOrb[aspectedPlanetName] && typeof this.options.maxOrb[aspectedPlanetName] === 'number') {
+                    var maxOrb = this.options.maxOrb[aspectedPlanetName];
+                }
+                else if (typeof this.options.maxOrb === 'number') {
+                    var maxOrb = this.options.maxOrb;
+                }
+                else {
+                    var maxOrb = 5;
+                }
 
-                // If this is an planet we don't want to aspect, or this is an aspect we don't want, skip it
-                if (!this.aspectedPlanets.includes(startPlanetName) || !this.aspectedPlanets.includes(endPlanetName) || !this.options.aspectOrder.includes(aspectType)) {
+                if (aspect.orb > maxOrb) {
                     continue;
                 }
 
-                const aspectToDraw = {
-                    startAngle: this.planets[startPlanetName].chartAngle - this.offsetAngle,
-                    endAngle: this.planets[endPlanetName].chartAngle - this.offsetAngle,
-                };
+                const aspectType = aspect.type.toLowerCase();
+
+                // If this is an planet we don't want to aspect, or this is an aspect we don't want, skip it
+                if (!this.aspectedPlanets.primary.includes(planetName) || !this.aspectedPlanets[this.chartData.primary.aspectsTo].includes(aspectedPlanetName) || !this.options.aspectOrder.includes(aspectType)) {
+                    continue;
+                }
+
+                const aspectToDraw = [
+                    this.planets.primary[planetName].chartAngle - this.offsetAngle,
+                    this.planets[this.chartData.primary.aspectsTo][aspectedPlanetName].chartAngle - this.offsetAngle
+                ].sort();
 
                 // Avoid duplicates
                 if (aspectsToDraw[aspectType].some(aspectData => JSON.stringify(aspectData) === JSON.stringify(aspectToDraw))) {
@@ -459,9 +493,10 @@ export default class Chart {
 
         // Now we have our definitive list, draw them
         for (const [aspectType, aspectList] of Object.entries(aspectsToDraw)) {
-            aspectList.forEach(aspect => {
-                const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, aspect.startAngle);
-                const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, aspect.endAngle);
+            aspectList.forEach(aspectToDraw => {
+                const [startAngle, endAngle] = aspectToDraw;
+                const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, startAngle);
+                const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, endAngle);
                 this.drawLine(x1, y1, x2, y2, 'immanuel__aspect-line', `aspect-line--${aspectType}`);
             });
         }

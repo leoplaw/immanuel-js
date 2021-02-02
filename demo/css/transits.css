@@ -1,0 +1,31 @@
+[data-immanuel-track="transit-planets"] {
+    top: 7%;
+    left: 7%;
+    width: 86%;
+    height: 86%;
+}
+
+[data-immanuel-track="transit-planets"] [data-immanuel-planet],
+[data-immanuel-track="transit-planets"] [data-immanuel-planet] .retrograde {
+    color: #0A0;
+}
+
+[data-immanuel-boundary="transit-angle-markers-end"] {
+    top: 10.1%;
+    left: 10.1%;
+    width: 79.8%;
+    height: 79.8%;
+}
+
+[data-immanuel-boundary="transit-angle-markers-start"] {
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+}
+
+.immanuel__transits-angle-marker,
+.immanuel__transits-angle-pointer {
+    stroke: #0A0;
+    stroke-width: 1px;
+}

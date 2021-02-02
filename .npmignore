@@ -1,4 +1,5 @@
 node_modules
 .babelrc.json
 test*.js
+*.map
 demo*

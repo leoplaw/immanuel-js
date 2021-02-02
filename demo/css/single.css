@@ -1,0 +1,101 @@
+[data-immanuel-track="angles"] {
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+}
+
+[data-immanuel-track="planets"] {
+    top: 23%;
+    left: 23%;
+    width: 54%;
+    height: 54%;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-track="planets"] {
+        top: 21%;
+        left: 21%;
+        width: 58%;
+        height: 58%;
+    }
+}
+
+[data-immanuel-track="angle-text"] {
+    top: 26.5%;
+    left: 26.5%;
+    width: 47%;
+    height: 47%;
+}
+
+[data-immanuel-boundary="angle-markers-end"] {
+    top: 17.75%;
+    left: 17.75%;
+    width: 64.5%;
+    height: 64.5%;
+}
+
+[data-immanuel-boundary="angle-markers-start"] {
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+}
+
+[data-immanuel-planet] {
+    display: inline-block;
+    padding: 0.2rem;
+    font-family: 'Astro';
+    font-size: 1.4rem;
+    line-height: 0.8;
+    text-align: center;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-planet] {
+        font-size: 2.2rem;
+    }
+}
+[data-immanuel-planet] .retrograde {
+    display: none;
+    position: absolute;
+    bottom: -0.1em;
+    right: -0.4em;
+    font-size: 0.8em;
+    color: #444;
+}
+[data-immanuel-planet].planet-movement--retrograde .retrograde {
+    display: block;
+}
+
+[data-immanuel-angle] {
+    display: inline-block;
+    font-family: 'Astro';
+    font-size: 1.5rem;
+    text-align: center;
+}
+@media only screen and (min-width: 620px) {
+    [data-immanuel-angle] {
+        font-size: 2rem;
+    }
+}
+
+[data-immanuel-angle] [data-immanuel-placeholder] {
+    display: block;
+    font-family: sans-serif;
+    font-size: 0.35em;
+}
+
+.immanuel__primary-angle-text {
+    font-size: 0.4em;
+}
+.immanuel__primary-angle-text .angle-text-minutes {
+    display: none;
+}
+@media only screen and (min-width: 620px) {
+    .immanuel__primary-angle-text {
+        font-size: 0.7em;
+    }
+
+    .immanuel__primary-angle-text .angle-text-minutes {
+        display: inline;
+    }
+}
