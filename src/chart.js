@@ -456,18 +456,31 @@ export default class Chart {
 
         for (const [planetName, planet] of Object.entries(this.planets.primary)) {
             for (const [aspectedPlanetName, aspect] of Object.entries(planet.aspects)) {
-                const [startPlanetName, endPlanetName] = [planetName, aspectedPlanetName].sort();
-                const aspectType = aspect.type.toLowerCase();
+                if (this.options.maxOrb instanceof Object && this.options.maxOrb[aspectedPlanetName] && typeof this.options.maxOrb[aspectedPlanetName] === 'number') {
+                    var maxOrb = this.options.maxOrb[aspectedPlanetName];
+                }
+                else if (typeof this.options.maxOrb === 'number') {
+                    var maxOrb = this.options.maxOrb;
+                }
+                else {
+                    var maxOrb = 5;
+                }
 
-                // If this is an planet we don't want to aspect, or this is an aspect we don't want, skip it
-                if (!this.aspectedPlanets.primary.includes(startPlanetName) || !this.aspectedPlanets[this.chartData.primary.aspectsTo].includes(endPlanetName) || !this.options.aspectOrder.includes(aspectType)) {
+                if (aspect.orb > maxOrb) {
                     continue;
                 }
 
-                const aspectToDraw = {
-                    startAngle: this.planets.primary[startPlanetName].chartAngle - this.offsetAngle,
-                    endAngle: this.planets[this.chartData.primary.aspectsTo][endPlanetName].chartAngle - this.offsetAngle,
-                };
+                const aspectType = aspect.type.toLowerCase();
+
+                // If this is an planet we don't want to aspect, or this is an aspect we don't want, skip it
+                if (!this.aspectedPlanets.primary.includes(planetName) || !this.aspectedPlanets[this.chartData.primary.aspectsTo].includes(aspectedPlanetName) || !this.options.aspectOrder.includes(aspectType)) {
+                    continue;
+                }
+
+                const aspectToDraw = [
+                    this.planets.primary[planetName].chartAngle - this.offsetAngle,
+                    this.planets[this.chartData.primary.aspectsTo][aspectedPlanetName].chartAngle - this.offsetAngle
+                ].sort();
 
                 // Avoid duplicates
                 if (aspectsToDraw[aspectType].some(aspectData => JSON.stringify(aspectData) === JSON.stringify(aspectToDraw))) {
@@ -480,9 +493,10 @@ export default class Chart {
 
         // Now we have our definitive list, draw them
         for (const [aspectType, aspectList] of Object.entries(aspectsToDraw)) {
-            aspectList.forEach(aspect => {
-                const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, aspect.startAngle);
-                const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, aspect.endAngle);
+            aspectList.forEach(aspectToDraw => {
+                const [startAngle, endAngle] = aspectToDraw;
+                const [x1, y1] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, startAngle);
+                const [x2, y2] = Utils.findGlobalPoint(this.elements.chart, this.elements.aspectEndBoundary, endAngle);
                 this.drawLine(x1, y1, x2, y2, 'immanuel__aspect-line', `aspect-line--${aspectType}`);
             });
         }
